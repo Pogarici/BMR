@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Responsive BMR Calculator</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    background:#ffffff;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#333;
+}
+
+/* INPUT AREA */
+
+.form-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:20px;
+    margin-bottom:35px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    margin-bottom:8px;
+    font-weight:bold;
+    color:#333;
+}
+
+input,
+select{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:16px;
+    background:#fff;
+    transition:0.2s;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#336699;
+    box-shadow:0 0 0 4px rgba(51,102,153,0.15);
+}
+
+/* TABLE */
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    overflow:hidden;
+    border-radius:18px;
+}
+
+th{
+    background:#336699;
+    color:white;
+    padding:16px;
+    text-align:center;
+    font-size:16px;
+    border:1px solid #ffffff20;
+}
+
+td{
+    padding:18px;
+    text-align:center;
+    border:1px solid #ddd;
+    font-size:15px;
+}
+
+/* BMR COLUMN */
+
+.bmr-cell{
+    font-size:34px;
+    font-weight:bold;
+    background:#ffffff;
+    vertical-align:middle;
+    min-width:180px;
+}
+
+/* ACTIVITY COLORS */
+
+.row1{ background:#FE7676; color:#222; }
+.row2{ background:#DAF2D0; color:#222; }
+.row3{ background:#B5E6A2; color:#222; }
+.row4{ background:#8ED973; color:#222; }
+.row5{ background:#8ED973; color:#222; }
+
+/* RESULT COLUMN */
+
+.result-cell{
+    font-weight:bold;
+    font-size:18px;
+    background:#fafafa;
+}
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+    .container{ padding:20px; }
+
+    th, td{
+        padding:14px 10px;
+        font-size:14px;
+    }
+
+    .bmr-cell{ font-size:26px; }
+
+    h2{ font-size:24px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>BMR Calculator</h2>
+
+    <div class="form-row">
+
+        <div class="form-group">
+            <label>Gender</label>
+            <select id="gender">
+                <option value="man">Man</option>
+                <option value="woman">Woman</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="age" placeholder="Enter age">
+        </div>
+
+        <div class="form-group">
+            <label>Weight (kg)</label>
+            <input type="number" id="weight" placeholder="Enter weight">
+        </div>
+
+        <div class="form-group">
+            <label>Height (cm)</label>
+            <input type="number" id="height" placeholder="Enter height">
+        </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>BMR Calories</th>
+                    <th>Activity Level</th>
+                    <th id="genderHeader">Man</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td class="bmr-cell" rowspan="5" id="bmrValue">--</td>
+
+                    <td class="row1">Sedentary: little or no exercise</td>
+                    <td class="result-cell" id="r1">--</td>
+                </tr>
+
+                <tr>
+                    <td class="row2">Exercise 1-3 times/week</td>
+                    <td class="result-cell" id="r2">--</td>
+                </tr>
+
+                <tr>
+                    <td class="row3">Exercise 4-5 times/week</td>
+                    <td class="result-cell" id="r3">--</td>
+                </tr>
+
+                <tr>
+                    <td class="row4">Daily exercise or intense exercise 3-4 times/week</td>
+                    <td class="result-cell" id="r4">--</td>
+                </tr>
+
+                <tr>
+                    <td class="row5">Intense exercise 6-7 times/week</td>
+                    <td class="result-cell" id="r5">--</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+function resetValues(){
+
+    document.getElementById("bmrValue").innerText = "--";
+
+    document.getElementById("r1").innerText = "--";
+    document.getElementById("r2").innerText = "--";
+    document.getElementById("r3").innerText = "--";
+    document.getElementById("r4").innerText = "--";
+    document.getElementById("r5").innerText = "--";
+}
+
+function formatNumber(number){
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function calculateBMR(){
+
+    let gender = document.getElementById("gender").value;
+
+    let age = document.getElementById("age").value;
+    let weight = document.getElementById("weight").value;
+    let height = document.getElementById("height").value;
+
+    if(age === "" || weight === "" || height === ""){
+        resetValues();
+        document.getElementById("genderHeader").innerText =
+            gender === "man" ? "Man" : "Woman";
+        return;
+    }
+
+    age = parseFloat(age);
+    weight = parseFloat(weight);
+    height = parseFloat(height);
+
+    let bmr = 0;
+
+    if(gender === "man"){
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+        document.getElementById("genderHeader").innerText = "Man";
+    } else {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+        document.getElementById("genderHeader").innerText = "Woman";
+    }
+
+    bmr = Math.round(bmr);
+
+    document.getElementById("bmrValue").innerText =
+        formatNumber(bmr) + " Kcal";
+
+    document.getElementById("r1").innerText =
+        formatNumber(Math.round(bmr * 1.20)) + " Kcal";
+
+    document.getElementById("r2").innerText =
+        formatNumber(Math.round(bmr * 1.37)) + " Kcal";
+
+    document.getElementById("r3").innerText =
+        formatNumber(Math.round(bmr * 1.46)) + " Kcal";
+
+    document.getElementById("r4").innerText =
+        formatNumber(Math.round(bmr * 1.55)) + " Kcal";
+
+    document.getElementById("r5").innerText =
+        formatNumber(Math.round(bmr * 1.73)) + " Kcal";
+}
+
+document.getElementById("gender").addEventListener("change", calculateBMR);
+document.getElementById("age").addEventListener("input", calculateBMR);
+document.getElementById("weight").addEventListener("input", calculateBMR);
+document.getElementById("height").addEventListener("input", calculateBMR);
+
+resetValues();
+
+</script>
+
+</body>
+</html>
