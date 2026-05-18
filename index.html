@@ -16,6 +16,7 @@
 
 :root{
     --base: 3.5vw;
+    --accent-red:#d93025;
 }
 
 body{
@@ -26,6 +27,7 @@ body{
     padding:2vw;
 }
 
+/* DARK MODE */
 body.dark{
     background:#1c1c1c;
     color:#eee;
@@ -42,6 +44,8 @@ h2{
     margin-bottom:2vw;
 }
 
+/* INPUTS */
+
 .form-row{
     display:flex;
     flex-direction:column;
@@ -49,27 +53,15 @@ h2{
     margin-bottom:2vw;
 }
 
-.input-line{
-    display:flex;
-    align-items:center;
+input, select{
     width:100%;
-}
-
-.input-line label{
-    flex:0 0 30%;
-    font-size:calc(var(--base) * 0.9);
-}
-
-/* ✅ input fix + keypad optimization */
-.input-line input,
-.input-line select{
-    flex:1;
-    padding:1.5vw;
+    padding:1.8vw;
     font-size:max(16px, calc(var(--base) * 0.9));
     border-radius:1.5vw;
     border:1px solid #ccc;
-    min-width:0;
 }
+
+/* BMR BOX */
 
 .bmr-box{
     text-align:center;
@@ -87,9 +79,9 @@ body.dark .bmr-box{
     font-size:calc(var(--base) * 2);
     font-weight:bold;
     color:#336699;
-    transition: color 0.3s ease;
 }
 
+/* DARK GOLD VALUE */
 body.dark .bmr-value{
     color:#FFD700 !important;
 }
@@ -109,7 +101,6 @@ body.dark .bmr-value{
 .card-text{
     flex:1;
     font-size:calc(var(--base) * 0.85);
-    line-height:1.2;
 }
 
 .card-text strong{
@@ -123,17 +114,38 @@ body.dark .bmr-value{
     white-space:nowrap;
 }
 
-/* COLORS */
-
 .row1{background:#FE7676}
 .row2{background:#DAF2D0}
 .row3{background:#B5E6A2}
 .row4{background:#8ED973}
 .row5{background:#8ED973}
 
+/* readability fix */
 body.dark .row2,
 body.dark .row3{
     color:#000;
+}
+
+/* ✅ EXERCISE INFO BLOCK */
+
+.info-block{
+    margin-top:2vw;
+    padding:2.5vw;
+    border-radius:3vw;
+    background:#fff;
+    font-size:calc(var(--base) * 0.85);
+}
+
+body.dark .info-block{
+    background:#2c2c2c;
+}
+
+.info-block p{
+    margin-bottom:1.2vw;
+}
+
+.info-block strong{
+    color:var(--accent-red);
 }
 
 /* BUTTONS */
@@ -154,6 +166,7 @@ button{
     color:#fff;
 }
 
+/* DESKTOP */
 @media(min-width:768px){
     :root{
         --base:16px;
@@ -171,29 +184,15 @@ button{
 
 <div class="form-row">
 
-<div class="input-line">
-<label>Gender:</label>
 <select id="gender">
-<option value="" disabled selected>Select</option>
+<option value="" disabled selected>Select Gender</option>
 <option value="man">Man</option>
 <option value="woman">Woman</option>
 </select>
-</div>
 
-<div class="input-line">
-<label>Age:</label>
-<input type="number" id="age" inputmode="numeric" pattern="[0-9]*">
-</div>
-
-<div class="input-line">
-<label>Weight:</label>
-<input type="number" id="weight" inputmode="decimal" pattern="[0-9]*">
-</div>
-
-<div class="input-line">
-<label>Height:</label>
-<input type="number" id="height" inputmode="numeric" pattern="[0-9]*">
-</div>
+<input type="number" id="age" inputmode="numeric" placeholder="Age">
+<input type="number" id="weight" inputmode="decimal" placeholder="Weight (kg)">
+<input type="number" id="height" inputmode="numeric" placeholder="Height (cm)">
 
 </div>
 
@@ -204,6 +203,13 @@ button{
 
 <div id="results"></div>
 
+<!-- ✅ NEW INFO BLOCK -->
+<div class="info-block">
+<p><strong>Exercise:</strong> 15-30 minutes of elevated heart rate activity.</p>
+<p><strong>Intense exercise:</strong> 45-120 minutes of elevated heart rate activity.</p>
+<p><strong>Very intense exercise:</strong> 2+ hours of elevated heart rate activity.</p>
+</div>
+
 <div class="actions">
 <button onclick="savePDF()">Save PDF</button>
 <button id="darkBtn" onclick="toggleDark()">Dark</button>
@@ -213,7 +219,25 @@ button{
 
 <script>
 
-const levels = [
+/* AUTO FLOW */
+const order=["age","weight","height"];
+
+order.forEach((id,i)=>{
+ let el=document.getElementById(id);
+ el.addEventListener("input",()=>{
+  if(el.value && i<order.length-1){
+   document.getElementById(order[i+1]).focus();
+  }
+ });
+});
+
+gender.addEventListener("change",()=>{
+ age.focus();
+});
+
+/* DATA */
+
+const levels=[
  {name:"Sedentary",desc:"Little or no exercise",mult:1.2,class:"row1"},
  {name:"Light Activity",desc:"Exercise 1-3 times/week",mult:1.37,class:"row2"},
  {name:"Moderate Activity",desc:"Exercise 4-5 times/week",mult:1.46,class:"row3"},
@@ -237,6 +261,7 @@ function calculate(){
  : (10*w)+(6.25*h)-(5*a)-161;
 
  bmr=Math.round(bmr);
+
  bmrValue.innerText=format(bmr);
 
  results.innerHTML=levels.map(l=>`
@@ -256,34 +281,21 @@ function reset(){
 }
 
 function savePDF(){
-    window.print();
+ window.print();
 }
-
-/* ✅ SMART AUTO-FOCUS */
-document.getElementById("age").addEventListener("change", ()=>{
-    document.getElementById("weight").focus();
-});
-
-document.getElementById("weight").addEventListener("change", ()=>{
-    document.getElementById("height").focus();
-});
-
-/* DARK MODE */
 
 function toggleDark(){
 
-    document.body.classList.toggle("dark");
+ document.body.classList.toggle("dark");
 
-    const btn = document.getElementById("darkBtn");
-    const isDark = document.body.classList.contains("dark");
+ const btn=document.getElementById("darkBtn");
+ const isDark=document.body.classList.contains("dark");
 
-    btn.innerText = isDark ? "Light" : "Dark";
+ btn.innerText=isDark?"Light":"Dark";
 
-    const bmr = document.getElementById("bmrValue");
-    bmr.style.color = isDark ? "#FFD700" : "#336699";
+ const bmr=document.getElementById("bmrValue");
+ bmr.style.color=isDark?"#FFD700":"#336699";
 }
-
-/* LISTENERS */
 
 ["age","weight","height","gender"].forEach(id=>{
  document.getElementById(id).addEventListener("input",calculate);
