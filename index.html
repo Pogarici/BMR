@@ -8,14 +8,12 @@
 
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-/* GLOBAL SCALE */
 :root{
     --base: 3.5vw;
 }
@@ -34,20 +32,17 @@ body.dark{
     color:#eee;
 }
 
-/* MAIN CONTAINER */
 .container{
     width:100%;
     max-width:500px;
 }
 
-/* TITLE */
 h2{
     text-align:center;
     font-size:calc(var(--base) * 1.6);
     margin-bottom:2vw;
 }
 
-/* INPUT ROW */
 .form-row{
     display:flex;
     flex-direction:column;
@@ -73,10 +68,9 @@ h2{
     font-size:calc(var(--base) * 0.9);
     border-radius:1.5vw;
     border:1px solid #ccc;
-    min-width:0; /* ✅ prevents overflow */
+    min-width:0;
 }
 
-/* BMR BOX */
 .bmr-box{
     text-align:center;
     padding:3vw;
@@ -95,7 +89,6 @@ body.dark .bmr-box{
     color:#336699;
 }
 
-/* CARDS */
 .card{
     display:flex;
     justify-content:space-between;
@@ -106,7 +99,6 @@ body.dark .bmr-box{
     margin-bottom:1.5vw;
 }
 
-/* TEXT */
 .card-text{
     flex:1;
     font-size:calc(var(--base) * 0.85);
@@ -126,13 +118,21 @@ body.dark .bmr-box{
 }
 
 /* COLORS */
+
 .row1{background:#FE7676}
 .row2{background:#DAF2D0}
 .row3{background:#B5E6A2}
 .row4{background:#8ED973}
 .row5{background:#8ED973}
 
+/* ✅ Keep text BLACK for Light & Moderate in dark mode */
+body.dark .row2,
+body.dark .row3{
+    color:#000;
+}
+
 /* BUTTONS */
+
 .actions{
     display:flex;
     gap:2vw;
@@ -149,7 +149,7 @@ button{
     color:#fff;
 }
 
-/* ✅ LARGE SCREEN ADJUSTMENT */
+/* DESKTOP SCALE */
 @media(min-width:768px){
     :root{
         --base:16px;
@@ -202,7 +202,7 @@ button{
 
 <div class="actions">
 <button onclick="savePDF()">Save PDF</button>
-<button onclick="toggleDark()">Dark</button>
+<button id="darkBtn" onclick="toggleDark()">Dark</button>
 </div>
 
 </div>
@@ -254,7 +254,9 @@ function reset(){
 function savePDF(){ window.print(); }
 
 function toggleDark(){
- document.body.classList.toggle("dark");
+    document.body.classList.toggle("dark");
+    const btn = document.getElementById("darkBtn");
+    btn.innerText = document.body.classList.contains("dark") ? "Light" : "Dark";
 }
 
 ["age","weight","height","gender"].forEach(id=>{
@@ -265,3 +267,4 @@ function toggleDark(){
 
 </body>
 </html>
+``
