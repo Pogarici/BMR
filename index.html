@@ -51,7 +51,10 @@ h2{
     margin-bottom:2vw;
 }
 
-/* ✅ INPUTS (LABEL INSIDE) */
+.input-line{
+    display:flex;
+    width:100%;
+}
 
 .input-line input,
 .input-line select{
@@ -62,7 +65,7 @@ h2{
     border:1px solid #ccc;
 }
 
-/* BMR BOX */
+/* BMR */
 
 .bmr-box{
     text-align:center;
@@ -123,11 +126,16 @@ body.dark .row3{
     color:#000;
 }
 
-/* ✅ IMPORTANT INFO BLOCK */
+/* INFO BLOCK */
 
 .info-block{
     margin-top:1vw;
     font-size:calc(var(--base) * 0.85);
+}
+
+.info-block p:first-of-type{
+    margin-top:1vw;
+    margin-bottom:1vw; /* ✅ added spacing below */
 }
 
 .info-title{
@@ -178,15 +186,25 @@ button{
 
 <div class="form-row">
 
+<div class="input-line">
 <select id="gender">
 <option value="" disabled selected>Select Gender</option>
 <option value="man">Man</option>
 <option value="woman">Woman</option>
 </select>
+</div>
 
-<input type="text" id="age" inputmode="numeric" value="Age: ">
-<input type="text" id="weight" inputmode="decimal" value="Weight: ">
-<input type="text" id="height" inputmode="numeric" value="Height: ">
+<div class="input-line">
+<input type="text" id="age" value="Age: ">
+</div>
+
+<div class="input-line">
+<input type="text" id="weight" value="Weight (Kg): ">
+</div>
+
+<div class="input-line">
+<input type="text" id="height" value="Height (cm): ">
+</div>
 
 </div>
 
@@ -197,11 +215,9 @@ button{
 
 <div id="results"></div>
 
-<!-- ✅ IMPORTANT INFO -->
 <div class="info-block">
 <div class="info-title">Important Info!</div>
-<p><strong>The basal metabolic rate (BMR) is the amount of energy needed while resting in a temperate environment when the digestive system is inactive.</strong></p>
-<p><strong> </strong></p>
+<p>The basal metabolic rate (BMR) is the amount of energy needed while resting in a temperate environment when the digestive system is inactive.</p>
 <p><strong>Exercise:</strong> 15-30 minutes of elevated heart rate activity.</p>
 <p><strong>Intense exercise:</strong> 45-120 minutes of elevated heart rate activity.</p>
 <p><strong>Very intense exercise:</strong> 2+ hours of elevated heart rate activity.</p>
@@ -216,11 +232,11 @@ button{
 
 <script>
 
-/* ✅ KEEP LABEL INSIDE INPUT */
+/* ✅ CLEAN INPUT HANDLER (NO DOUBLE SPACING) */
 
 function handleInput(el, label){
     el.addEventListener("input", () => {
-        let val = el.value.replace(label, "").trim();
+        let val = el.value.replace(label, "").replace(/[^\d.]/g, "").trim();
         el.value = label + (val ? " " + val : " ");
     });
 
@@ -232,14 +248,16 @@ function handleInput(el, label){
 }
 
 handleInput(age, "Age:");
-handleInput(weight, "Weight:");
-handleInput(height, "Height:");
+handleInput(weight, "Weight (Kg):");
+handleInput(height, "Height (cm):");
 
-/* ✅ CLEAN VALUE FOR CALCULATION */
+/* CLEAN NUMBER */
 
-function getNumber(val, label){
-    return parseFloat(val.replace(label, "").trim());
+function getNumber(val,label){
+    return parseFloat(val.replace(label,"").trim());
 }
+
+/* DATA */
 
 const levels = [
  {name:"Sedentary",desc:"Little or no exercise",mult:1.2,class:"row1"},
@@ -255,10 +273,10 @@ function format(n){
 
 function calculate(){
 
- let g = gender.value;
- let a = getNumber(age.value,"Age:");
- let w = getNumber(weight.value,"Weight:");
- let h = getNumber(height.value,"Height:");
+ let g=gender.value;
+ let a=getNumber(age.value,"Age:");
+ let w=getNumber(weight.value,"Weight (Kg):");
+ let h=getNumber(height.value,"Height (cm):");
 
  if(!g||!a||!w||!h){ reset(); return; }
 
