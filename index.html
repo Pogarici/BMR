@@ -135,7 +135,7 @@ body.dark .row3{
 
 .info-block p:first-of-type{
     margin-top:1vw;
-    margin-bottom:1vw; /* ✅ added spacing below */
+    margin-bottom:1vw;
 }
 
 .info-title{
@@ -194,16 +194,17 @@ button{
 </select>
 </div>
 
+<!-- ✅ NUMERIC KEYPAD -->
 <div class="input-line">
-<input type="text" id="age" value="Age: ">
+<input type="text" id="age" inputmode="numeric" enterkeyhint="next" value="Age: ">
 </div>
 
 <div class="input-line">
-<input type="text" id="weight" value="Weight (Kg): ">
+<input type="text" id="weight" inputmode="decimal" enterkeyhint="next" value="Weight (Kg): ">
 </div>
 
 <div class="input-line">
-<input type="text" id="height" value="Height (cm): ">
+<input type="text" id="height" inputmode="numeric" enterkeyhint="done" value="Height (cm): ">
 </div>
 
 </div>
@@ -232,8 +233,6 @@ button{
 
 <script>
 
-/* ✅ CLEAN INPUT HANDLER (NO DOUBLE SPACING) */
-
 function handleInput(el, label){
     el.addEventListener("input", () => {
         let val = el.value.replace(label, "").replace(/[^\d.]/g, "").trim();
@@ -251,13 +250,9 @@ handleInput(age, "Age:");
 handleInput(weight, "Weight (Kg):");
 handleInput(height, "Height (cm):");
 
-/* CLEAN NUMBER */
-
 function getNumber(val,label){
     return parseFloat(val.replace(label,"").trim());
 }
-
-/* DATA */
 
 const levels = [
  {name:"Sedentary",desc:"Little or no exercise",mult:1.2,class:"row1"},
