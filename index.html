@@ -54,25 +54,7 @@ input,select{
     border:1px solid #ccc;
 }
 
-/* CARD */
-
-.card{
-    border-radius:16px;
-    padding:15px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-}
-
-/* COLORS */
-
-.row1{background:#FE7676}
-.row2{background:#DAF2D0}
-.row3{background:#B5E6A2}
-.row4{background:#8ED973}
-.row5{background:#8ED973}
-
-/* BMR */
+/* BMR BOX */
 
 .bmr-box{
     text-align:center;
@@ -92,6 +74,39 @@ body.dark .bmr-box{
     color:#336699;
 }
 
+/* CARD */
+
+.card{
+    border-radius:16px;
+    padding:15px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+/* TEXT INSIDE CARD */
+
+.card-text{
+    flex:1;
+    font-size:13px;
+}
+
+.card-value{
+    font-weight:bold;
+    font-size:14px;
+    text-align:right;
+}
+
+/* COLORS */
+
+.row1{background:#FE7676}
+.row2{background:#DAF2D0}
+.row3{background:#B5E6A2}
+.row4{background:#8ED973}
+.row5{background:#8ED973}
+
 /* BUTTONS */
 
 .actions{
@@ -110,19 +125,6 @@ button{
     cursor:pointer;
 }
 
-/* CHART */
-
-canvas{
-    margin-top:15px;
-    background:white;
-    border-radius:16px;
-    width:100%;
-}
-
-body.dark canvas{
-    background:#2c2c2c;
-}
-
 </style>
 </head>
 
@@ -133,14 +135,17 @@ body.dark canvas{
 <h2>BMR Calculator</h2>
 
 <div class="form-row">
+
 <select id="gender">
-<option value="man">Man</option>
-<option value="woman">Woman</option>
+    <option value="" disabled selected>Select Gender</option>
+    <option value="man">Man</option>
+    <option value="woman">Woman</option>
 </select>
 
 <input type="number" id="age" placeholder="Age">
-<input type="number" id="weight" placeholder="Weight kg">
-<input type="number" id="height" placeholder="Height cm">
+<input type="number" id="weight" placeholder="Weight (kg)">
+<input type="number" id="height" placeholder="Height (cm)">
+
 </div>
 
 <div class="bmr-box">
@@ -149,8 +154,6 @@ body.dark canvas{
 </div>
 
 <div id="results"></div>
-
-<canvas id="chart" height="150"></canvas>
 
 <div class="actions">
 <button onclick="savePDF()">Save PDF</button>
@@ -162,11 +165,36 @@ body.dark canvas{
 <script>
 
 const levels = [
- {name:"Sedentary", mult:1.2, class:"row1"},
- {name:"1-3x/week", mult:1.37, class:"row2"},
- {name:"4-5x/week", mult:1.46, class:"row3"},
- {name:"Daily", mult:1.55, class:"row4"},
- {name:"Intense", mult:1.73, class:"row5"}
+ {
+   name:"Sedentary",
+   desc:"Little or no exercise",
+   mult:1.2,
+   class:"row1"
+ },
+ {
+   name:"Exercise 1-3 times/week",
+   desc:"Light activity",
+   mult:1.37,
+   class:"row2"
+ },
+ {
+   name:"Exercise 4-5 times/week",
+   desc:"Moderate activity",
+   mult:1.46,
+   class:"row3"
+ },
+ {
+   name:"Daily exercise or intense exercise 3-4 times/week",
+   desc:"Active lifestyle",
+   mult:1.55,
+   class:"row4"
+ },
+ {
+   name:"Intense exercise 6-7 times/week",
+   desc:"Very active / athlete level",
+   mult:1.73,
+   class:"row5"
+ }
 ];
 
 function format(n){
@@ -178,7 +206,10 @@ function calculate(){
  let g=document.getElementById("gender").value;
  let a=+age.value, w=+weight.value, h=+height.value;
 
- if(!a||!w||!h)return;
+ if(!a||!w||!h||!g){
+    reset();
+    return;
+ }
 
  let bmr = g==="man"
  ? (10*w)+(6.25*h)-(5*a)+5
@@ -189,7 +220,6 @@ function calculate(){
  bmrValue.innerText=format(bmr);
 
  renderCards(bmr);
- drawChart(bmr);
 }
 
 function renderCards(bmr){
@@ -197,34 +227,25 @@ function renderCards(bmr){
  let html="";
  levels.forEach(l=>{
    let val=Math.round(bmr*l.mult);
-   html+=`<div class="card ${l.class}">
-             <span>${l.name}</span>
-             <span>${format(val)}</span>
-          </div>`;
+   html+=`
+   <div class="card ${l.class}">
+        <div class="card-text">
+            <strong>${l.name}</strong><br>
+            ${l.desc}
+        </div>
+        <div class="card-value">${format(val)}</div>
+   </div>`;
  });
 
  results.innerHTML=html;
 }
 
-function drawChart(bmr){
-
- let c=document.getElementById("chart");
- let ctx=c.getContext("2d");
-
- let values=levels.map(l=>Math.round(bmr*l.mult));
- let max=Math.max(...values);
-
- ctx.clearRect(0,0,c.width,c.height);
-
- values.forEach((v,i)=>{
-   let x=i*(c.width/5)+20;
-   let h=(v/max)*(c.height-40);
-   ctx.fillStyle=["#FE7676","#DAF2D0","#B5E6A2","#8ED973","#8ED973"][i];
-   ctx.fillRect(x,c.height-h,30,h);
- });
+function reset(){
+    bmrValue.innerText="--";
+    results.innerHTML="";
 }
 
-/* PDF SAVE (browser dialog lets user pick location) */
+/* SAVE → opens native PDF dialog */
 function savePDF(){
     window.print();
 }
