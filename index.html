@@ -61,11 +61,12 @@ h2{
     font-size:calc(var(--base) * 0.9);
 }
 
+/* ✅ KEY FIX HERE */
 .input-line input,
 .input-line select{
     flex:1;
     padding:1.5vw;
-    font-size:calc(var(--base) * 0.9);
+    font-size:max(16px, calc(var(--base) * 0.9)); /* prevents iPhone zoom */
     border-radius:1.5vw;
     border:1px solid #ccc;
     min-width:0;
@@ -83,7 +84,7 @@ body.dark .bmr-box{
     background:#2c2c2c;
 }
 
-/* ✅ BMR VALUE */
+/* BMR VALUE */
 .bmr-value{
     font-size:calc(var(--base) * 2);
     font-weight:bold;
@@ -91,7 +92,7 @@ body.dark .bmr-box{
     transition: color 0.3s ease;
 }
 
-/* ✅ DARK MODE COLOR */
+/* DARK MODE COLOR */
 body.dark .bmr-value{
     color:#FFD700 !important;
 }
@@ -134,7 +135,7 @@ body.dark .bmr-value{
 .row4{background:#8ED973}
 .row5{background:#8ED973}
 
-/* ✅ keep text visible */
+/* keep readable */
 body.dark .row2,
 body.dark .row3{
     color:#000;
@@ -264,7 +265,6 @@ function savePDF(){
     window.print();
 }
 
-/* ✅ DARK MODE WITH FORCED BMR COLOR */
 function toggleDark(){
 
     document.body.classList.toggle("dark");
@@ -274,7 +274,6 @@ function toggleDark(){
 
     btn.innerText = isDark ? "Light" : "Dark";
 
-    /* ✅ FORCE RENDER FIX */
     const bmr = document.getElementById("bmrValue");
     bmr.style.color = isDark ? "#FFD700" : "#336699";
 }
