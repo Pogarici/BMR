@@ -14,10 +14,15 @@
     padding:0;
 }
 
+html {
+    font-size: clamp(14px, 1.8vw, 18px);
+}
+
 body{
     font-family:Arial, sans-serif;
     background:#f4f6f9;
     padding:20px;
+    -webkit-text-size-adjust: 100%;
 }
 
 .container{
@@ -26,7 +31,7 @@ body{
     margin:auto;
     background:#ffffff;
     border-radius:20px;
-    padding:30px;
+    padding: clamp(15px, 3vw, 30px);
     box-shadow:0 8px 25px rgba(0,0,0,0.08);
 }
 
@@ -82,6 +87,7 @@ select:focus{
 
 table{
     width:100%;
+    min-width:600px;
     border-collapse:separate;
     border-spacing:0;
     overflow:hidden;
@@ -95,6 +101,7 @@ th{
     text-align:center;
     font-size:16px;
     border:1px solid #ffffff20;
+    word-wrap: break-word;
 }
 
 td{
@@ -102,12 +109,13 @@ td{
     text-align:center;
     border:1px solid #ddd;
     font-size:15px;
+    word-wrap: break-word;
 }
 
 /* BMR COLUMN */
 
 .bmr-cell{
-    font-size:34px;
+    font-size: clamp(22px, 5vw, 34px);
     font-weight:bold;
     background:#ffffff;
     vertical-align:middle;
@@ -134,16 +142,31 @@ td{
 
 @media (max-width:768px){
 
-    .container{ padding:20px; }
-
-    th, td{
-        padding:14px 10px;
-        font-size:14px;
+    body{
+        padding:10px;
     }
 
-    .bmr-cell{ font-size:26px; }
+    .container{ 
+        padding:15px; 
+    }
 
-    h2{ font-size:24px; }
+    h2{ 
+        font-size:20px; 
+    }
+
+    th, td{
+        padding:10px 8px;
+        font-size:13px;
+    }
+
+    .bmr-cell{ 
+        font-size:22px; 
+    }
+
+    input, select{
+        padding:12px;
+        font-size:14px;
+    }
 }
 
 </style>
