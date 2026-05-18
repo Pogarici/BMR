@@ -4,129 +4,100 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>BMR Calculator</title>
+<title>BMR App</title>
 
 <style>
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f4f6f9;
-    padding:15px;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+}
+
+/* DARK MODE */
+body.dark{
+    background:#1c1c1c;
+    color:#eee;
 }
 
 /* CONTAINER */
 
 .container{
-    max-width:600px;
-    margin:auto;
+    width:100%;
+    max-width:420px;
 }
 
 /* TITLE */
 
 h2{
     text-align:center;
-    margin-bottom:20px;
-    color:#333;
+    margin-bottom:15px;
 }
 
 /* INPUTS */
 
 .form-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-.form-group{
     display:flex;
     flex-direction:column;
+    gap:10px;
+    margin-bottom:15px;
 }
 
-label{
-    font-size:13px;
-    margin-bottom:5px;
-    font-weight:bold;
-}
-
-input, select{
+input,select{
+    width:100%;
     padding:12px;
     border-radius:10px;
     border:1px solid #ccc;
-    font-size:14px;
 }
 
-/* BMR CARD */
+/* CARD */
 
-.bmr-card{
-    background:#fff;
-    border-radius:20px;
-    padding:25px;
+.card{
+    border-radius:16px;
+    padding:15px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+}
+
+/* COLORS */
+
+.row1{background:#FE7676}
+.row2{background:#DAF2D0}
+.row3{background:#B5E6A2}
+.row4{background:#8ED973}
+.row5{background:#8ED973}
+
+/* BMR */
+
+.bmr-box{
     text-align:center;
-    margin-bottom:20px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-    transition:0.3s;
+    padding:20px;
+    border-radius:16px;
+    background:#fff;
+    margin-bottom:10px;
+}
+
+body.dark .bmr-box{
+    background:#2c2c2c;
 }
 
 .bmr-value{
-    font-size:40px;
+    font-size:32px;
     font-weight:bold;
     color:#336699;
 }
 
-/* RESULT CARDS */
-
-.cards{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-/* CARD BASE */
-
-.card{
-    padding:15px;
-    border-radius:16px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:14px;
-    transition:0.3s;
-    transform:scale(1);
-}
-
-/* HOVER EFFECT (Desktop bonus) */
-.card:hover{
-    transform:scale(1.02);
-}
-
-/* COLORS (UNCHANGED FROM YOU) */
-
-.row1{ background:#FE7676; }
-.row2{ background:#DAF2D0; }
-.row3{ background:#B5E6A2; }
-.row4{ background:#8ED973; }
-.row5{ background:#8ED973; }
-
-/* TEXT */
-
-.card span:last-child{
-    font-weight:bold;
-    font-size:16px;
-}
-
-/* ACTION BUTTONS */
+/* BUTTONS */
 
 .actions{
-    margin-top:20px;
     display:flex;
     gap:10px;
+    margin-top:10px;
 }
 
 button{
@@ -135,13 +106,21 @@ button{
     border:none;
     border-radius:12px;
     background:#336699;
-    color:#fff;
-    font-size:14px;
+    color:white;
     cursor:pointer;
 }
 
-button:active{
-    transform:scale(0.96);
+/* CHART */
+
+canvas{
+    margin-top:15px;
+    background:white;
+    border-radius:16px;
+    width:100%;
+}
+
+body.dark canvas{
+    background:#2c2c2c;
 }
 
 </style>
@@ -151,196 +130,114 @@ button:active{
 
 <div class="container">
 
-    <h2>BMR Calculator</h2>
+<h2>BMR Calculator</h2>
 
-    <div class="form-row">
+<div class="form-row">
+<select id="gender">
+<option value="man">Man</option>
+<option value="woman">Woman</option>
+</select>
 
-        <div class="form-group">
-            <label>Gender</label>
-            <select id="gender">
-                <option value="man">Man</option>
-                <option value="woman">Woman</option>
-            </select>
-        </div>
+<input type="number" id="age" placeholder="Age">
+<input type="number" id="weight" placeholder="Weight kg">
+<input type="number" id="height" placeholder="Height cm">
+</div>
 
-        <div class="form-group">
-            <label>Age</label>
-            <input type="number" id="age">
-        </div>
+<div class="bmr-box">
+<div>BMR Calories</div>
+<div class="bmr-value" id="bmrValue">--</div>
+</div>
 
-        <div class="form-group">
-            <label>Weight (kg)</label>
-            <input type="number" id="weight">
-        </div>
+<div id="results"></div>
 
-        <div class="form-group">
-            <label>Height (cm)</label>
-            <input type="number" id="height">
-        </div>
+<canvas id="chart" height="150"></canvas>
 
-    </div>
-
-    <!-- BMR DISPLAY -->
-
-    <div class="bmr-card">
-        <div>BMR Calories</div>
-        <div class="bmr-value" id="bmrValue">--</div>
-    </div>
-
-    <!-- RESULTS -->
-
-    <div class="cards">
-
-        <div class="card row1">
-            <span>Sedentary</span>
-            <span id="r1">--</span>
-        </div>
-
-        <div class="card row2">
-            <span>Exercise 1-3x/week</span>
-            <span id="r2">--</span>
-        </div>
-
-        <div class="card row3">
-            <span>Exercise 4-5x/week</span>
-            <span id="r3">--</span>
-        </div>
-
-        <div class="card row4">
-            <span>Daily exercise</span>
-            <span id="r4">--</span>
-        </div>
-
-        <div class="card row5">
-            <span>Intense 6-7x/week</span>
-            <span id="r5">--</span>
-        </div>
-
-    </div>
-
-    <!-- ACTIONS -->
-
-    <div class="actions">
-        <button onclick="saveResult()">Save</button>
-        <button onclick="shareResult()">Share</button>
-    </div>
+<div class="actions">
+<button onclick="savePDF()">Save PDF</button>
+<button onclick="toggleDark()">Dark</button>
+</div>
 
 </div>
 
 <script>
 
-function formatNumber(number){
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const levels = [
+ {name:"Sedentary", mult:1.2, class:"row1"},
+ {name:"1-3x/week", mult:1.37, class:"row2"},
+ {name:"4-5x/week", mult:1.46, class:"row3"},
+ {name:"Daily", mult:1.55, class:"row4"},
+ {name:"Intense", mult:1.73, class:"row5"}
+];
+
+function format(n){
+ return n.toLocaleString("de-DE")+" kcal";
 }
 
-function calculateBMR(){
+function calculate(){
 
-    let gender = document.getElementById("gender").value;
-    let age = document.getElementById("age").value;
-    let weight = document.getElementById("weight").value;
-    let height = document.getElementById("height").value;
+ let g=document.getElementById("gender").value;
+ let a=+age.value, w=+weight.value, h=+height.value;
 
-    if(!age || !weight || !height){
-        resetValues();
-        return;
-    }
+ if(!a||!w||!h)return;
 
-    age = parseFloat(age);
-    weight = parseFloat(weight);
-    height = parseFloat(height);
+ let bmr = g==="man"
+ ? (10*w)+(6.25*h)-(5*a)+5
+ : (10*w)+(6.25*h)-(5*a)-161;
 
-    let bmr = gender === "man"
-        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
-        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+ bmr=Math.round(bmr);
 
-    bmr = Math.round(bmr);
+ bmrValue.innerText=format(bmr);
 
-    animateValue("bmrValue", bmr);
-    setValue("r1", bmr * 1.20);
-    setValue("r2", bmr * 1.37);
-    setValue("r3", bmr * 1.46);
-    setValue("r4", bmr * 1.55);
-    setValue("r5", bmr * 1.73);
+ renderCards(bmr);
+ drawChart(bmr);
 }
 
-function setValue(id, val){
-    document.getElementById(id).innerText =
-        formatNumber(Math.round(val)) + " kcal";
+function renderCards(bmr){
+
+ let html="";
+ levels.forEach(l=>{
+   let val=Math.round(bmr*l.mult);
+   html+=`<div class="card ${l.class}">
+             <span>${l.name}</span>
+             <span>${format(val)}</span>
+          </div>`;
+ });
+
+ results.innerHTML=html;
 }
 
-/* SMOOTH NUMBER ANIMATION */
+function drawChart(bmr){
 
-function animateValue(id, value){
+ let c=document.getElementById("chart");
+ let ctx=c.getContext("2d");
 
-    let el = document.getElementById(id);
-    let start = 0;
-    let duration = 400;
-    let startTime = null;
+ let values=levels.map(l=>Math.round(bmr*l.mult));
+ let max=Math.max(...values);
 
-    function animation(currentTime){
-        if(!startTime) startTime = currentTime;
-        let progress = Math.min((currentTime - startTime)/duration, 1);
-        let val = Math.floor(progress * value);
+ ctx.clearRect(0,0,c.width,c.height);
 
-        el.innerText = formatNumber(val) + " kcal";
-
-        if(progress < 1){
-            requestAnimationFrame(animation);
-        }
-    }
-
-    requestAnimationFrame(animation);
+ values.forEach((v,i)=>{
+   let x=i*(c.width/5)+20;
+   let h=(v/max)*(c.height-40);
+   ctx.fillStyle=["#FE7676","#DAF2D0","#B5E6A2","#8ED973","#8ED973"][i];
+   ctx.fillRect(x,c.height-h,30,h);
+ });
 }
 
-function resetValues(){
-    document.getElementById("bmrValue").innerText = "--";
-    ["r1","r2","r3","r4","r5"].forEach(id=>{
-        document.getElementById(id).innerText="--";
-    });
+/* PDF SAVE (browser dialog lets user pick location) */
+function savePDF(){
+    window.print();
 }
 
-/* SAVE */
-
-function saveResult(){
-    let data = {
-        bmr: document.getElementById("bmrValue").innerText,
-        r1: document.getElementById("r1").innerText,
-        r2: document.getElementById("r2").innerText,
-        r3: document.getElementById("r3").innerText,
-        r4: document.getElementById("r4").innerText,
-        r5: document.getElementById("r5").innerText
-    };
-    localStorage.setItem("bmrData", JSON.stringify(data));
-    alert("Saved!");
-}
-
-/* SHARE */
-
-function shareResult(){
-
-    let text = `
-BMR: ${document.getElementById("bmrValue").innerText}
-Sedentary: ${document.getElementById("r1").innerText}
-1-3x/week: ${document.getElementById("r2").innerText}
-4-5x/week: ${document.getElementById("r3").innerText}
-Daily: ${document.getElementById("r4").innerText}
-Intense: ${document.getElementById("r5").innerText}
-`;
-
-    if(navigator.share){
-        navigator.share({title:"BMR Result", text:text});
-    }else{
-        alert(text);
-    }
+/* DARK MODE */
+function toggleDark(){
+    document.body.classList.toggle("dark");
 }
 
 /* LISTENERS */
-
 ["age","weight","height","gender"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", calculateBMR);
+ document.getElementById(id).addEventListener("input",calculate);
 });
-
-resetValues();
 
 </script>
 
